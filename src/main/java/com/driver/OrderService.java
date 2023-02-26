@@ -1,7 +1,6 @@
 package com.driver;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,6 +10,7 @@ public class OrderService {
 
     @Autowired
     OrderRepository orderRepository;
+
     public void addOrder(Order order){
         orderRepository.addOrder(order);
     }
@@ -22,6 +22,7 @@ public class OrderService {
     public void addOrderPartnerPair(String orderId, String partnerId){
         orderRepository.addOrderPartnerPair(orderId,partnerId);
     }
+
     public Order getOrderById(String orderId){
         return orderRepository.getOrderById(orderId);
     }
@@ -46,20 +47,24 @@ public class OrderService {
         return orderRepository.getCountOfUnassignedOrders();
     }
 
-    public int getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId){
-        String newTime[] = time.split(":");
-        int timeInt = Integer.parseInt(newTime[0])*60 + Integer.parseInt(newTime[1]);
+    public int getOrdersLeftAfterGivenTimeByPartnerId(String deliveryTime, String partnerId){
+        String time[] = deliveryTime.split(":");
+        int newTime = Integer.parseInt(time[0])*60 + Integer.parseInt(time[1]);
 
-        return orderRepository.getOrdersLeftAfterGivenTimeByPartnerId(timeInt, partnerId);
+        return orderRepository.getOrdersLeftAfterGivenTimeByPartnerId(newTime, partnerId);
     }
 
     public String getLastDeliveryTimeByPartnerId(String partnerId){
         int time = orderRepository.getLastDeliveryTimeByPartnerId(partnerId);
         String HH = String.valueOf(time/60);
         String MM = String.valueOf(time%60);
-        String ans = HH + ":" + MM;
 
-        return ans;
+        if(HH.length()<2)
+            HH = '0' + HH;
+        if(MM.length()<2)
+            MM = '0' + MM;
+
+        return HH+':'+MM;
     }
 
     public void deletePartnerById(String partnerId){
